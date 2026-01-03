@@ -1,14 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { RAW_DATA, DAYS, KEY_MAPPING } from './constants';
+import { RawTimetableEntry } from './types';
 import DaySelector from './components/RoomSelector'; // Note: File name kept as RoomSelector per instruction, content is DaySelector
 import DailyScheduleTable from './components/DailyScheduleTable';
 import { DashboardStats } from './components/DashboardStats';
 import RoomFilter from './components/RoomFilter';
+import RoomDetailsModal from './components/RoomDetailsModal';
 
 const App: React.FC = () => {
   const [activeDayIndex, setActiveDayIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRooms, setSelectedRooms] = useState<string[]>([]);
+  const [selectedRoomData, setSelectedRoomData] = useState<RawTimetableEntry | null>(null);
 
   // 1. Process Data: Remove the first entry which is just time metadata
   const cleanData = useMemo(() => RAW_DATA.slice(1), []);
@@ -71,13 +74,21 @@ const App: React.FC = () => {
     });
   }, [cleanData, searchQuery, activeDayIndex, selectedRooms]);
 
+  const handleRoomClick = (roomData: RawTimetableEntry) => {
+    setSelectedRoomData(roomData);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedRoomData(null);
+  };
+
   return (
     <div className="min-h-screen bg-[#F3F4F6] pb-12 font-sans">
       {/* Navbar (Simplified) */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <span className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <span className="bg-blue-600 text-white p-1 rounded">
+                <span className="bg-[#23a440] text-white p-1 rounded">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                 </span>
                 Timetable Viewer
@@ -109,7 +120,7 @@ const App: React.FC = () => {
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg leading-5 bg-white placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm shadow-sm"
+              className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg leading-5 bg-white placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-[#23a440] focus:border-[#23a440] sm:text-sm shadow-sm"
               placeholder="Search course code, name, or room..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -129,6 +140,14 @@ const App: React.FC = () => {
         <DailyScheduleTable 
           data={filteredData} 
           dayIndex={activeDayIndex} 
+          onRoomClick={handleRoomClick}
+        />
+
+        {/* Room Details Modal */}
+        <RoomDetailsModal 
+          isOpen={!!selectedRoomData} 
+          onClose={handleCloseModal} 
+          data={selectedRoomData} 
         />
 
       </main>

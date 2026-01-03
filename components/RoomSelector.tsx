@@ -18,7 +18,7 @@ const DaySelector: React.FC<DaySelectorProps> = ({ activeDayIndex, onSelectDay }
             className={`
               px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ease-in-out
               ${isActive 
-                ? 'bg-blue-600 text-white shadow-md transform scale-105' 
+                ? 'bg-[#23a440] text-white shadow-md transform scale-105' 
                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-gray-300'
               }
             `}

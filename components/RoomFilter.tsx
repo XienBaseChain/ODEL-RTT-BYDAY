@@ -34,7 +34,7 @@ const RoomFilter: React.FC<RoomFilterProps> = ({ rooms, selectedRooms, onChange 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative w-full cursor-pointer rounded-lg border border-gray-200 bg-white py-3 pl-3 pr-10 text-left shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm hover:bg-gray-50 transition-colors"
+        className="relative w-full cursor-pointer rounded-lg border border-gray-200 bg-white py-3 pl-3 pr-10 text-left shadow-sm focus:border-[#23a440] focus:outline-none focus:ring-2 focus:ring-[#23a440] sm:text-sm hover:bg-gray-50 transition-colors"
       >
         <span className={`block truncate ${selectedRooms.length === 0 ? 'text-gray-500' : 'text-gray-900 font-medium'}`}>
           {selectedRooms.length === 0
@@ -58,7 +58,7 @@ const RoomFilter: React.FC<RoomFilterProps> = ({ rooms, selectedRooms, onChange 
                         e.stopPropagation();
                         onChange([]);
                     }}
-                    className="text-xs text-blue-600 hover:text-blue-800 font-bold uppercase tracking-wider"
+                    className="text-xs text-[#23a440] hover:text-[#1a7a30] font-bold uppercase tracking-wider"
                 >
                     Clear All
                 </button>
@@ -69,16 +69,16 @@ const RoomFilter: React.FC<RoomFilterProps> = ({ rooms, selectedRooms, onChange 
             return (
               <div
                 key={room}
-                className={`relative cursor-pointer select-none py-3 pl-4 pr-4 hover:bg-gray-50 transition-colors ${isSelected ? 'bg-blue-50' : ''}`}
+                className={`relative cursor-pointer select-none py-3 pl-4 pr-4 hover:bg-gray-50 transition-colors ${isSelected ? 'bg-[#23a440]/10' : ''}`}
                 onClick={() => handleToggleRoom(room)}
               >
                 <div className="flex items-center">
-                  <div className={`flex items-center justify-center h-5 w-5 rounded border ${isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-300 bg-white'}`}>
+                  <div className={`flex items-center justify-center h-5 w-5 rounded border ${isSelected ? 'bg-[#23a440] border-[#23a440]' : 'border-gray-300 bg-white'}`}>
                      {isSelected && (
                          <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                      )}
                   </div>
-                  <span className={`ml-3 block truncate ${isSelected ? 'font-semibold text-blue-900' : 'text-gray-700'}`}>
+                  <span className={`ml-3 block truncate ${isSelected ? 'font-semibold text-[#145220]' : 'text-gray-700'}`}>
                     {room}
                   </span>
                 </div>
