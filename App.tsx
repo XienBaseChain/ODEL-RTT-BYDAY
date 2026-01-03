@@ -1,17 +1,22 @@
 import React, { useState, useMemo } from 'react';
 import { RAW_DATA, DAYS, KEY_MAPPING } from './constants';
-import DaySelector from './components/RoomSelector'; // Note: File name kept as RoomSelector per instruction to minimize file deletion, but content is DaySelector
+import DaySelector from './components/RoomSelector'; // Note: File name kept as RoomSelector per instruction, content is DaySelector
 import DailyScheduleTable from './components/DailyScheduleTable';
 import { DashboardStats } from './components/DashboardStats';
+import RoomFilter from './components/RoomFilter';
 
 const App: React.FC = () => {
   const [activeDayIndex, setActiveDayIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRooms, setSelectedRooms] = useState<string[]>([]);
 
   // 1. Process Data: Remove the first entry which is just time metadata
   const cleanData = useMemo(() => RAW_DATA.slice(1), []);
 
-  // 2. Calculate Stats
+  // 2. Extract list of all available rooms for the filter
+  const allRooms = useMemo(() => cleanData.map(entry => entry['DAY']).sort(), [cleanData]);
+
+  // 3. Calculate Stats
   const stats = useMemo(() => {
     let classCount = 0;
     const activeRoomsSet = new Set<string>();
@@ -40,17 +45,20 @@ const App: React.FC = () => {
     };
   }, [cleanData]);
 
-  // 3. Filter Data based on Search
+  // 4. Filter Data based on Search AND Selected Rooms
   const filteredData = useMemo(() => {
     const query = searchQuery.toLowerCase();
     
-    // If no search, return all data (DailyScheduleTable will handle showing the grid)
-    // We might want to filter rooms that have NO classes on the selected day if we wanted to be strict,
-    // but usually seeing empty rooms is useful too.
-    
-    if (!query) return cleanData;
+    // Apply Room Filter first
+    let data = cleanData;
+    if (selectedRooms.length > 0) {
+      data = data.filter(room => selectedRooms.includes(room['DAY']));
+    }
 
-    return cleanData.filter(room => {
+    // Apply Search Query
+    if (!query) return data;
+
+    return data.filter(room => {
       // Check room name
       if (room['DAY'].toLowerCase().includes(query)) return true;
 
@@ -61,7 +69,7 @@ const App: React.FC = () => {
         return content && content.toLowerCase().includes(query);
       });
     });
-  }, [cleanData, searchQuery, activeDayIndex]);
+  }, [cleanData, searchQuery, activeDayIndex, selectedRooms]);
 
   return (
     <div className="min-h-screen bg-[#F3F4F6] pb-12 font-sans">
@@ -101,27 +109,19 @@ const App: React.FC = () => {
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm shadow-sm"
+              className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg leading-5 bg-white placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm shadow-sm"
               placeholder="Search course code, name, or room..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           
-          <div className="sm:w-64">
-             <div className="relative">
-                <select 
-                    className="block w-full pl-3 pr-10 py-3 text-base border border-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg bg-white shadow-sm appearance-none text-gray-600"
-                    disabled
-                >
-                    <option>All Departments</option>
-                    <option>School of Health</option>
-                    <option>Business School</option>
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
-                </div>
-             </div>
+          <div className="sm:w-auto">
+             <RoomFilter 
+               rooms={allRooms} 
+               selectedRooms={selectedRooms} 
+               onChange={setSelectedRooms} 
+             />
           </div>
         </div>
 
